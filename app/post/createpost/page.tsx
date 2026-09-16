@@ -1,7 +1,9 @@
 "use client"
 import { useRef } from "react"
 import axios from "axios"
+import { useRouter } from "next/navigation"
 export default function createpost() {
+    const router=useRouter()
     const contentref = useRef<HTMLInputElement>(null)
     const linkref = useRef<HTMLInputElement>(null)
     const tagsref = useRef<HTMLInputElement>(null)
@@ -27,6 +29,13 @@ export default function createpost() {
             <button onClick={createpost}
              className="border-1 m-2 p-2 hover cursor-pointer bg-white text-black">create post </button>
 
+                <div>
+                    <button onClick={()=>{
+                        router.push("/post/fetchposts")
+                    }}
+                     className="border-1 m-2 p-2 hover cursor-pointer bg-white text-black"
+                     >see all the posts</button>
+                </div>
         </div>
     </div>
 }
