@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(){
     const posts=await prisma.post.findMany({
@@ -18,12 +18,11 @@ export async function POST(req:NextRequest){
          data:{
             content:createpost.content,
             link:createpost.link,
-            tags:createpost.tags,
-            user:{
-                connect:{
-                    id:createpost.userId
-                }
-            }
+            tags:[createpost.tags ]
          }
+    })
+
+    return NextResponse.json({
+        message:"Post have been created"
     })
 }
