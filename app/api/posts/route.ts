@@ -104,7 +104,8 @@ export async function POST(req: NextRequest) {
 
     // 1 Post per day check (resets at midnight IST)
     const alreadyShipped = await hasShippedToday(userId);
-    const allowOverride = body.allowAnotherToday === true;
+    const allowOverride =
+      process.env.NODE_ENV === "development" && body.allowAnotherToday === true;
 
     if (alreadyShipped && !allowOverride) {
       return NextResponse.json(

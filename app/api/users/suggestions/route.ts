@@ -51,6 +51,6 @@ export async function GET() {
     return NextResponse.json({ suggestions });
   } catch (error) {
     console.error("GET suggestions error:", error);
-    return NextResponse.json({ error: "Failed to fetch suggestions" }, { status: 500 });
+    return NextResponse.json({ suggestions: [] });
   }
 }

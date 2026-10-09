@@ -43,6 +43,11 @@ export async function GET() {
     });
   } catch (error) {
     console.error("GET /api/streak error:", error);
-    return NextResponse.json({ error: "Failed to fetch streak info" }, { status: 500 });
+    return NextResponse.json({
+      currentStreak: 0,
+      longestStreak: 0,
+      hasShippedToday: false,
+      nextResetTime: new Date().toISOString(),
+    });
   }
 }

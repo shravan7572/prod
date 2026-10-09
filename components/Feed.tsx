@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useSession } from "next-auth/react";
-import { Compass, Users, X, RefreshCw } from "lucide-react";
+import { Compass, Users, X, RefreshCw, Search, Sparkles } from "lucide-react";
 import { ShipCard, ShipPost } from "./ShipCard";
 import { PostForm } from "./PostForm";
-import { PledgeBanner } from "./PledgeBanner";
 
 interface FeedProps {
   onWsStatusChange?: (connected: boolean) => void;
@@ -16,6 +15,7 @@ export function Feed({ onWsStatusChange }: FeedProps) {
   const [activeTab, setActiveTab] = useState<"discover" | "following">("discover");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [posts, setPosts] = useState<ShipPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -144,27 +144,45 @@ export function Feed({ onWsStatusChange }: FeedProps) {
     setSelectedTag((prev) => (prev === tag ? null : tag));
   }
 
+  // Filter posts by client search query if entered
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return posts;
+    const query = searchQuery.toLowerCase().trim();
+    return posts.filter(
+      (p) =>
+        p.content.toLowerCase().includes(query) ||
+        p.user.name.toLowerCase().includes(query) ||
+        p.user.username.toLowerCase().includes(query) ||
+        p.tags?.some((t) => t.toLowerCase().includes(query))
+    );
+  }, [posts, searchQuery]);
+
+  const hasActiveFilters = Boolean(selectedTag || selectedCity || searchQuery);
+
+  function clearAllFilters() {
+    setSelectedTag(null);
+    setSelectedCity(null);
+    setSearchQuery("");
+  }
+
   return (
     <div className="space-y-4">
-      {/* Tomorrow's Pledge Banner */}
-      <PledgeBanner />
-
       {/* Daily Ship Post Form */}
       <PostForm
         onPostCreated={handlePostCreated}
         onStreakUpdated={fetchFeed}
       />
 
-      {/* Feed Navigation & Tabs */}
-      <div className="pt-1 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Tabs: Discover vs Following */}
+      {/* Feed Navigation & Search Toolbar */}
+      <div className="pt-1 space-y-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          {/* Segmented Tabs: Discover vs Following */}
           <div className="flex items-center rounded-lg border border-zinc-200 bg-white p-1 w-fit shadow-xs">
             <button
               onClick={() => setActiveTab("discover")}
               className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                 activeTab === "discover"
-                  ? "bg-zinc-900 text-white"
+                  ? "bg-zinc-900 text-white shadow-xs"
                   : "text-zinc-600 hover:text-zinc-900"
               }`}
             >
@@ -176,7 +194,7 @@ export function Feed({ onWsStatusChange }: FeedProps) {
               onClick={() => setActiveTab("following")}
               className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                 activeTab === "following"
-                  ? "bg-zinc-900 text-white"
+                  ? "bg-zinc-900 text-white shadow-xs"
                   : "text-zinc-600 hover:text-zinc-900"
               }`}
             >
@@ -185,33 +203,29 @@ export function Feed({ onWsStatusChange }: FeedProps) {
             </button>
           </div>
 
-          {/* Refresh & Active Filter Badges */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {selectedCity && (
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs text-zinc-700">
-                <span>📍 {selectedCity}</span>
+          {/* Quick search input */}
+          <div className="flex items-center gap-2 flex-1 sm:max-w-xs">
+            <div className="relative w-full">
+              <Search
+                size={12}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search ships or @builders..."
+                className="w-full rounded-lg border border-zinc-200 bg-white py-1.5 pl-7 pr-7 text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-400 shadow-xs"
+              />
+              {searchQuery && (
                 <button
-                  onClick={() => setSelectedCity(null)}
-                  className="text-zinc-400 hover:text-zinc-900"
-                  title="Clear city filter"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
                 >
-                  <X size={12} />
+                  <X size={11} />
                 </button>
-              </div>
-            )}
-
-            {selectedTag && (
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs text-zinc-700">
-                <span>#{selectedTag}</span>
-                <button
-                  onClick={() => setSelectedTag(null)}
-                  className="text-zinc-400 hover:text-zinc-900"
-                  title="Clear tag filter"
-                >
-                  <X size={12} />
-                </button>
-              </div>
-            )}
+              )}
+            </div>
 
             <button
               onClick={() => {
@@ -219,46 +233,57 @@ export function Feed({ onWsStatusChange }: FeedProps) {
                 fetchFeed();
               }}
               disabled={refreshing}
-              className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 px-2.5 py-1.5 text-xs font-medium text-zinc-600 transition-colors shadow-xs"
+              className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 px-2.5 py-1.5 text-xs font-medium text-zinc-600 transition-colors shadow-xs flex-shrink-0"
               title="Refresh feed"
             >
               <RefreshCw
                 size={12}
                 className={refreshing ? "animate-spin text-zinc-900" : ""}
               />
-              <span className="hidden sm:inline">Refresh</span>
+              <span className="hidden sm:inline">Sync</span>
             </button>
           </div>
         </div>
 
         {/* Discovery Filter Chips: Cities & Stacks */}
         <div className="rounded-xl border border-zinc-200 bg-white p-3 space-y-2 text-xs shadow-xs">
-          {/* City filters */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 text-xs">
-            <span className="text-zinc-400 font-medium flex-shrink-0">City:</span>
-            {[
-              { label: "All", value: null },
-              { label: "Pune", value: "Pune" },
-              { label: "Bangalore", value: "Bangalore" },
-              { label: "Mumbai", value: "Mumbai" },
-            ].map((c) => (
+          <div className="flex items-center justify-between">
+            {/* City filters */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-0.5 text-xs">
+              <span className="text-zinc-400 font-medium flex-shrink-0">City:</span>
+              {[
+                { label: "All", value: null },
+                { label: "Pune", value: "Pune" },
+                { label: "Bangalore", value: "Bangalore" },
+                { label: "Mumbai", value: "Mumbai" },
+              ].map((c) => (
+                <button
+                  key={c.label}
+                  onClick={() => setSelectedCity(c.value)}
+                  className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors flex-shrink-0 border ${
+                    selectedCity === c.value || (!selectedCity && c.value === null)
+                      ? "border-zinc-900 bg-zinc-900 text-white"
+                      : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            {hasActiveFilters && (
               <button
-                key={c.label}
-                onClick={() => setSelectedCity(c.value)}
-                className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors flex-shrink-0 border ${
-                  selectedCity === c.value || (!selectedCity && c.value === null)
-                    ? "border-zinc-900 bg-zinc-900 text-white"
-                    : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
-                }`}
+                onClick={clearAllFilters}
+                className="text-[11px] text-zinc-400 hover:text-[#eb5e52] font-medium transition-colors flex-shrink-0 pl-2"
               >
-                {c.label}
+                Clear all
               </button>
-            ))}
+            )}
           </div>
 
           {/* Popular Stack Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pt-1.5 border-t border-zinc-100 text-xs">
-            <span className="text-zinc-400 font-medium flex-shrink-0">Stacks:</span>
+            <span className="text-zinc-400 font-medium flex-shrink-0">Filter tag:</span>
             {["nextjs", "react", "prisma", "ai", "websocket", "postgres", "tailwind"].map((t) => (
               <button
                 key={t}
@@ -274,6 +299,40 @@ export function Feed({ onWsStatusChange }: FeedProps) {
             ))}
           </div>
         </div>
+
+        {/* Active Filter Indicators */}
+        {hasActiveFilters && (
+          <div className="flex items-center gap-2 flex-wrap text-xs pt-0.5">
+            <span className="text-[11px] text-zinc-400">Filtering:</span>
+            {selectedCity && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[11px] text-zinc-700">
+                <span>📍 {selectedCity}</span>
+                <button onClick={() => setSelectedCity(null)} className="hover:text-red-500">
+                  <X size={10} />
+                </button>
+              </span>
+            )}
+            {selectedTag && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[11px] text-zinc-700">
+                <span>#{selectedTag}</span>
+                <button onClick={() => setSelectedTag(null)} className="hover:text-red-500">
+                  <X size={10} />
+                </button>
+              </span>
+            )}
+            {searchQuery && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-zinc-200 bg-white px-2 py-0.5 text-[11px] text-zinc-700">
+                <span>&ldquo;{searchQuery}&rdquo;</span>
+                <button onClick={() => setSearchQuery("")} className="hover:text-red-500">
+                  <X size={10} />
+                </button>
+              </span>
+            )}
+            <span className="text-[11px] text-zinc-400 font-mono">
+              ({filteredPosts.length} result{filteredPosts.length === 1 ? "" : "s"})
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Feed Stream */}
@@ -296,24 +355,36 @@ export function Feed({ onWsStatusChange }: FeedProps) {
             </div>
           ))}
         </div>
-      ) : posts.length === 0 ? (
+      ) : filteredPosts.length === 0 ? (
         <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center shadow-xs">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100 text-zinc-500">
             {activeTab === "following" ? <Users size={18} /> : <Compass size={18} />}
           </div>
           <h3 className="mt-3 text-sm font-semibold text-zinc-900">
-            {activeTab === "following"
+            {searchQuery
+              ? `No ships matching "${searchQuery}"`
+              : activeTab === "following"
               ? "No ships from your network yet"
               : selectedTag
               ? `No ships tagged #${selectedTag}`
               : "No ships recorded yet today"}
           </h3>
           <p className="mt-1 text-xs text-zinc-500 max-w-sm mx-auto">
-            {activeTab === "following"
+            {hasActiveFilters
+              ? "Try clearing filters to see all builder activity."
+              : activeTab === "following"
               ? "Follow other builders from Discover to see their daily ships here."
               : "Be the first to share what you shipped today."}
           </p>
-          {activeTab === "following" && (
+
+          {hasActiveFilters ? (
+            <button
+              onClick={clearAllFilters}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 px-3.5 py-1.5 text-xs font-semibold text-zinc-800 transition-colors"
+            >
+              Clear Filters
+            </button>
+          ) : activeTab === "following" ? (
             <button
               onClick={() => setActiveTab("discover")}
               className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 px-4 py-1.5 text-xs font-semibold text-white transition-colors"
@@ -321,11 +392,11 @@ export function Feed({ onWsStatusChange }: FeedProps) {
               <Compass size={12} />
               <span>Explore Discover Feed</span>
             </button>
-          )}
+          ) : null}
         </div>
       ) : (
         <div className="space-y-3 pt-1">
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <ShipCard
               key={post.id}
               post={post}

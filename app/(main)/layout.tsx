@@ -8,10 +8,10 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#f6f8f6] text-[#18181b] selection:bg-[#eb5e52]/15 selection:text-[#eb5e52]">
+    <div className="min-h-screen flex flex-col bg-[#f8faf8] text-zinc-900 selection:bg-[#eb5e52]/15 selection:text-[#eb5e52]">
       <Navbar />
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-4 sm:px-6 py-6">
+      <main className="flex-1 mx-auto w-full max-w-5xl px-4 sm:px-6 py-5">
         {children}
       </main>
 

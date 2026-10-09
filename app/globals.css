@@ -2,14 +2,14 @@
 
 @layer base {
   :root {
-    --background: #f6f8f6;
-    --foreground: #18181b;
+    --background: #f8faf8;
+    --foreground: #111827;
   }
 }
 
 body {
-  background-color: #f6f8f6;
-  color: #18181b;
+  background-color: #f8faf8;
+  color: #111827;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -17,7 +17,7 @@ body {
   position: relative;
 }
 
-/* Subtle clean scrollbar */
+/* Custom sleek scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -26,18 +26,18 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d8;
+  background: #e2e8f0;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
+  background: #cbd5e1;
 }
 
-/* Simple card hover */
-.minimal-card {
-  transition: all 0.2s ease-in-out;
+/* Card hover animation */
+.cool-card {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.minimal-card:hover {
-  border-color: #d1d5db;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+.cool-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.05);
 }

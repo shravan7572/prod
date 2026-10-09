@@ -26,6 +26,7 @@ function GithubIcon({ size = 12, className = "" }: { size?: number; className?: 
 }
 import { StreakBadge } from "@/components/StreakBadge";
 import { ShipCard, ShipPost } from "@/components/ShipCard";
+import { ActivityHeatmap } from "@/components/ActivityHeatmap";
 
 interface ProfileUser {
   id: string;
@@ -444,6 +445,15 @@ export default function ProfilePage({
           </div>
         </div>
       )}
+
+      {/* Activity Heatmap Grid */}
+      <ActivityHeatmap
+        posts={posts}
+        currentStreak={user.currentStreak}
+        longestStreak={user.longestStreak}
+        hasShippedToday={user.hasShippedToday}
+        weeksCount={14}
+      />
 
       {/* Shipped History Feed */}
       <div className="space-y-3">

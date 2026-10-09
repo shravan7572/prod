@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Target, Plus, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { useToast } from "./Toast";
 
 export function PledgeBanner() {
   const { data: session } = useSession();
+  const { success } = useToast();
   const [pledge, setPledge] = useState<{ id: string; content: string } | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [content, setContent] = useState("");
@@ -47,6 +49,7 @@ export function PledgeBanner() {
         setContent("");
         setIsAdding(false);
         setSubmitted(true);
+        success("Pledge saved! Tomorrow we ship 🔥");
         setTimeout(() => setSubmitted(false), 3000);
       }
     } catch (err) {
