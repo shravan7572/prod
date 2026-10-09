@@ -98,19 +98,7 @@ export function ShipCard({
     : null;
 
   return (
-    <article
-      className={`relative rounded-xl border p-5 card-hover backdrop-blur-sm ${
-        post.isNew
-          ? "border-zinc-500 bg-zinc-900/90 shadow-md shadow-zinc-900"
-          : "border-zinc-800/80 bg-zinc-950/70 shadow-sm"
-      }`}
-    >
-      {post.isNew && (
-        <div className="absolute -top-2.5 right-4 rounded-full border border-zinc-600 bg-zinc-900 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-zinc-200 shadow-sm">
-          Just Shipped
-        </div>
-      )}
-
+    <article className="relative rounded-xl border border-zinc-200 bg-white p-4 sm:p-5 shadow-xs minimal-card">
       {/* Author Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
@@ -123,50 +111,50 @@ export function ShipCard({
               <img
                 src={post.user.image}
                 alt={post.user.name}
-                className="h-10 w-10 rounded-full border border-zinc-700 object-cover bg-zinc-900 transition-transform group-hover:scale-105"
+                className="h-9 w-9 rounded-full border border-zinc-200 object-cover bg-zinc-100"
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-sm font-semibold text-zinc-200 group-hover:border-zinc-500">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 text-xs font-bold text-zinc-700">
                 {post.user.name.slice(0, 1).toUpperCase()}
               </div>
             )}
           </Link>
 
           <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <Link
                 href={`/profile/${post.user.username}`}
-                className="font-semibold text-sm text-zinc-100 hover:underline truncate"
+                className="font-semibold text-xs text-zinc-900 hover:underline truncate"
               >
                 {post.user.name}
               </Link>
               <Link
                 href={`/profile/${post.user.username}`}
-                className="text-xs text-zinc-400 font-mono hover:text-zinc-300 truncate"
+                className="text-xs text-zinc-400 truncate"
               >
                 @{post.user.username}
               </Link>
-              <span className="text-zinc-600 text-xs">·</span>
-              <span className="text-xs text-zinc-400 font-mono">
+              <span className="text-zinc-300 text-xs">·</span>
+              <span className="text-xs text-zinc-400">
                 {timeAgo(post.createdAt)}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 mt-0.5 flex-wrap text-xs text-zinc-400">
+            <div className="flex items-center gap-2 mt-0.5 flex-wrap text-xs text-zinc-500">
               <StreakBadge
                 currentStreak={post.user.currentStreak}
                 size="sm"
               />
 
               {post.user.city && (
-                <span className="inline-flex items-center gap-1 text-[11px] text-zinc-400">
+                <span className="inline-flex items-center gap-0.5 text-[11px] text-zinc-500">
                   <MapPin size={10} className="text-zinc-400" />
                   {post.user.city}
                 </span>
               )}
 
               {post.user.college && (
-                <span className="inline-flex items-center gap-1 text-[11px] text-zinc-400 truncate max-w-[150px]">
+                <span className="inline-flex items-center gap-0.5 text-[11px] text-zinc-400 truncate max-w-[140px]">
                   <GraduationCap size={10} className="text-zinc-400" />
                   {post.user.college}
                 </span>
@@ -180,20 +168,20 @@ export function ShipCard({
           <button
             onClick={handleToggleFollow}
             disabled={loadingFollow}
-            className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium border transition-colors ${
+            className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
               following
-                ? "border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100"
-                : "border-zinc-700 bg-zinc-100 text-zinc-900 hover:bg-white font-semibold"
+                ? "border border-zinc-200 bg-zinc-50 text-zinc-600 hover:text-zinc-900"
+                : "border border-zinc-300 bg-zinc-900 text-white hover:bg-zinc-800"
             }`}
           >
             {following ? (
               <>
-                <UserCheck size={12} />
+                <UserCheck size={11} />
                 <span>Following</span>
               </>
             ) : (
               <>
-                <UserPlus size={12} />
+                <UserPlus size={11} />
                 <span>Follow</span>
               </>
             )}
@@ -202,19 +190,19 @@ export function ShipCard({
       </div>
 
       {/* Shipped Content */}
-      <div className="mt-3.5 text-sm leading-relaxed text-zinc-200 whitespace-pre-wrap break-words">
+      <div className="mt-3 text-sm leading-relaxed text-zinc-800 whitespace-pre-wrap break-words">
         {post.content}
       </div>
 
       {/* Tags & Links */}
-      <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2.5 pt-2 border-t border-zinc-900/80">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-zinc-100">
         <div className="flex flex-wrap items-center gap-1.5">
           {post.tags && post.tags.length > 0 ? (
             post.tags.map((tag) => (
               <button
                 key={tag}
                 onClick={() => onTagClick?.(tag)}
-                className="rounded border border-zinc-800/90 bg-zinc-900/60 px-2 py-0.5 text-[11px] font-mono text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 transition-colors"
+                className="rounded border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-600 transition-colors"
               >
                 #{tag}
               </button>
@@ -227,12 +215,12 @@ export function ShipCard({
             href={safeLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded border border-zinc-800 bg-zinc-900/90 px-2.5 py-1 text-xs text-zinc-300 hover:border-zinc-600 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 rounded border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700 transition-colors"
           >
-            <span className="truncate max-w-[200px] font-mono text-[11px]">
+            <span className="truncate max-w-[180px] text-[11px]">
               {cleanUrlDisplay(safeLink)}
             </span>
-            <ExternalLink size={12} className="text-zinc-400 flex-shrink-0" />
+            <ExternalLink size={10} className="text-zinc-400 flex-shrink-0" />
           </a>
         )}
       </div>

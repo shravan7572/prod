@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Terminal, Flame, ArrowRight, ShieldCheck, Sparkles, Check } from "lucide-react";
+import { Flame } from "lucide-react";
 
 export default function LoginPage() {
   const [demoLoading, setDemoLoading] = useState<string | null>(null);
@@ -69,33 +69,32 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4">
+    <div className="min-h-screen bg-[#f6f8f6] flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <Link href="/feed" className="inline-flex items-center gap-2 group mb-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-100 group-hover:border-zinc-500 transition-colors">
-            <Terminal size={20} />
+        <Link href="/" className="inline-flex items-center gap-2 mb-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#eb5e52] text-white font-bold text-base">
+            S
           </div>
-          <span className="font-mono text-xl font-bold tracking-tight text-zinc-100">
+          <span className="text-xl font-bold tracking-tight text-zinc-900">
             ShipIt
           </span>
         </Link>
-        <h2 className="text-xl font-bold tracking-tight text-zinc-100">
+        <h2 className="text-xl font-bold tracking-tight text-zinc-900">
           Daily accountability for developers who build.
         </h2>
-        <p className="mt-1.5 text-xs text-zinc-400 max-w-sm mx-auto">
-          One ship per day. Streaks reset at midnight IST. Discover peers who are
-          actively building.
+        <p className="mt-1 text-xs text-zinc-500 max-w-sm mx-auto">
+          One ship per day. Streaks reset at midnight IST. Discover peers actively shipping.
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl backdrop-blur-sm sm:p-8">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="rounded-xl border border-zinc-200 bg-white p-6 sm:p-7 shadow-xs">
           {/* Google OAuth Button */}
           <div>
             <button
               onClick={handleGoogleLogin}
               disabled={googleLoading}
-              className="w-full flex items-center justify-center gap-3 rounded-xl border border-zinc-700 bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-white disabled:opacity-50 transition-colors shadow-sm"
+              className="w-full flex items-center justify-center gap-2.5 rounded-lg bg-[#eb5e52] hover:bg-[#de5044] px-4 py-2.5 text-sm font-semibold text-white shadow-xs disabled:opacity-50 transition-colors"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -120,13 +119,13 @@ export default function LoginPage() {
           </div>
 
           {/* Divider */}
-          <div className="relative my-6">
+          <div className="relative my-5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-zinc-800" />
+              <div className="w-full border-t border-zinc-200" />
             </div>
-            <div className="relative flex justify-center text-xs uppercase font-mono">
-              <span className="bg-zinc-900/90 px-3 text-zinc-500">
-                Quick Dev & Demo Access
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2.5 text-zinc-400 font-medium">
+                Demo Accounts
               </span>
             </div>
           </div>
@@ -138,41 +137,37 @@ export default function LoginPage() {
                 key={account.username}
                 onClick={() => handleQuickLogin(account)}
                 disabled={!!demoLoading}
-                className="w-full flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-950/80 px-3.5 py-2.5 text-left text-xs text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900/90 hover:text-zinc-100 transition-colors group"
+                className="w-full flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 px-3.5 py-2.5 text-left text-xs text-zinc-800 transition-colors group"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-xs font-mono font-bold text-zinc-200">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-200 text-xs font-bold text-zinc-700">
                     {account.username.slice(0, 1).toUpperCase()}
                   </div>
                   <div>
-                    <div className="font-semibold text-zinc-200 group-hover:text-white">
+                    <div className="font-semibold text-zinc-900">
                       {account.name}
                     </div>
-                    <div className="text-[11px] text-zinc-500 font-mono">
+                    <div className="text-[11px] text-zinc-500">
                       @{account.username} · {account.role}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-zinc-400 font-mono text-[11px]">
-                  <Flame size={12} className="text-zinc-300 fill-zinc-300" />
+                <div className="flex items-center gap-1 text-orange-700 font-semibold text-xs bg-orange-50 border border-orange-200 px-2 py-0.5 rounded">
+                  <Flame size={11} className="text-[#eb5e52] fill-[#eb5e52]" />
                   <span>{account.streak}d</span>
-                  <ArrowRight
-                    size={12}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-1"
-                  />
                 </div>
               </button>
             ))}
           </div>
 
           {/* Custom Dev Login Toggle */}
-          <div className="mt-4 pt-3 border-t border-zinc-800/80 text-center">
+          <div className="mt-4 pt-3 border-t border-zinc-100 text-center">
             <button
               onClick={() => setShowCustom(!showCustom)}
-              className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors font-mono"
+              className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
             >
-              {showCustom ? "Hide custom login" : "Or sign in with custom dev profile →"}
+              {showCustom ? "Hide custom login" : "Or sign in with custom email →"}
             </button>
 
             {showCustom && (
@@ -183,7 +178,7 @@ export default function LoginPage() {
                   onChange={(e) => setCustomEmail(e.target.value)}
                   placeholder="your.email@example.com"
                   required
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none"
+                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none"
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <input
@@ -191,20 +186,20 @@ export default function LoginPage() {
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
                     placeholder="Full Name"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none"
+                    className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none"
                   />
                   <input
                     type="text"
                     value={customUsername}
                     onChange={(e) => setCustomUsername(e.target.value)}
                     placeholder="username"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none font-mono"
+                    className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={demoLoading === "custom" || !customEmail}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-100 py-2 text-xs font-semibold text-zinc-950 hover:bg-white transition-colors"
+                  className="w-full rounded-lg bg-zinc-900 hover:bg-zinc-800 py-2 text-xs font-semibold text-white transition-colors"
                 >
                   {demoLoading === "custom" ? "Signing In..." : "Sign In with Custom Profile"}
                 </button>
@@ -214,18 +209,18 @@ export default function LoginPage() {
         </div>
 
         {/* Feature summary bullets */}
-        <div className="mt-6 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-3">
-            <div className="font-mono text-sm font-bold text-zinc-200">1 / Day</div>
-            <div className="text-[11px] text-zinc-500 mt-0.5">Enforced Post</div>
+        <div className="mt-5 grid grid-cols-3 gap-2.5 text-center">
+          <div className="rounded-lg border border-zinc-200 bg-white p-2.5">
+            <div className="text-xs font-bold text-zinc-900">1 / Day</div>
+            <div className="text-[10px] text-zinc-500 mt-0.5">Enforced Post</div>
           </div>
-          <div className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-3">
-            <div className="font-mono text-sm font-bold text-zinc-200">00:00 IST</div>
-            <div className="text-[11px] text-zinc-500 mt-0.5">Daily Reset</div>
+          <div className="rounded-lg border border-zinc-200 bg-white p-2.5">
+            <div className="text-xs font-bold text-zinc-900">00:00 IST</div>
+            <div className="text-[10px] text-zinc-500 mt-0.5">Daily Reset</div>
           </div>
-          <div className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-3">
-            <div className="font-mono text-sm font-bold text-zinc-200">Real-time</div>
-            <div className="text-[11px] text-zinc-500 mt-0.5">WebSocket Feed</div>
+          <div className="rounded-lg border border-zinc-200 bg-white p-2.5">
+            <div className="text-xs font-bold text-zinc-900">Real-time</div>
+            <div className="text-[10px] text-zinc-500 mt-0.5">Live Feed</div>
           </div>
         </div>
       </div>

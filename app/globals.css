@@ -2,14 +2,14 @@
 
 @layer base {
   :root {
-    --background: #09090b;
-    --foreground: #f4f4f5;
+    --background: #f6f8f6;
+    --foreground: #18181b;
   }
 }
 
 body {
-  background-color: #09090b;
-  color: #f4f4f5;
+  background-color: #f6f8f6;
+  color: #18181b;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -17,13 +17,7 @@ body {
   position: relative;
 }
 
-/* Subtle dev dot grid background (pure monochrome, no colored gradient) */
-.bg-grid-pattern {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-/* Custom minimal scrollbar */
+/* Subtle clean scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -32,28 +26,18 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #d4d4d8;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #a1a1aa;
 }
 
-/* Live pulse indicator */
-@keyframes livePulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(0.85); }
+/* Simple card hover */
+.minimal-card {
+  transition: all 0.2s ease-in-out;
 }
-
-.live-indicator {
-  animation: livePulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Subtle card hover glow */
-.card-hover {
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.card-hover:hover {
-  border-color: #3f3f46;
-  background-color: rgba(24, 24, 27, 0.65);
+.minimal-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
 }

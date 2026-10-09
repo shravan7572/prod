@@ -7,7 +7,6 @@ import {
   MapPin,
   GraduationCap,
   Flame,
-  Calendar,
   UserPlus,
   UserCheck,
   Edit3,
@@ -158,9 +157,9 @@ export default function ProfilePage({
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6 animate-pulse py-6">
-        <div className="h-32 bg-zinc-900 rounded-2xl" />
-        <div className="h-40 bg-zinc-900 rounded-xl" />
+      <div className="max-w-3xl mx-auto space-y-4 animate-pulse py-4">
+        <div className="h-32 bg-white rounded-xl border border-zinc-200" />
+        <div className="h-40 bg-white rounded-xl border border-zinc-200" />
       </div>
     );
   }
@@ -168,27 +167,27 @@ export default function ProfilePage({
   if (!user) {
     return (
       <div className="max-w-md mx-auto text-center py-16">
-        <h2 className="text-lg font-semibold text-zinc-100">User not found</h2>
-        <p className="text-xs text-zinc-400 mt-1">
-          No developer with username @{username} exists.
+        <h2 className="text-lg font-bold text-zinc-900">Developer not found</h2>
+        <p className="text-xs text-zinc-500 mt-1">
+          No profile with username @{username} exists.
         </p>
         <Link
-          href="/feed"
-          className="mt-4 inline-flex items-center gap-1.5 text-xs text-zinc-300 hover:text-white"
+          href="/"
+          className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-white"
         >
-          <ArrowLeft size={14} /> Back to Feed
+          <ArrowLeft size={13} /> Back to Feed
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-5">
       {/* Back button */}
       <div>
         <Link
-          href="/feed"
-          className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+          href="/"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           <ArrowLeft size={13} />
           <span>Back to Feed</span>
@@ -196,47 +195,47 @@ export default function ProfilePage({
       </div>
 
       {/* Profile Card */}
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-6 backdrop-blur-sm">
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5">
-          <div className="flex items-start gap-4">
+      <div className="rounded-xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-xs minimal-card">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div className="flex items-start gap-3.5">
             {user.image ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={user.image}
                 alt={user.name}
-                className="h-16 w-16 rounded-2xl border border-zinc-700 object-cover bg-zinc-900 flex-shrink-0"
+                className="h-14 w-14 rounded-full border border-zinc-200 object-cover bg-zinc-100 flex-shrink-0"
               />
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-900 text-xl font-bold text-zinc-200 flex-shrink-0">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full border border-zinc-200 bg-zinc-100 text-lg font-bold text-zinc-700 flex-shrink-0">
                 {user.name.slice(0, 1).toUpperCase()}
               </div>
             )}
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-lg font-bold text-zinc-100">{user.name}</h1>
-                <span className="font-mono text-xs text-zinc-400">
+                <h1 className="text-lg font-bold text-zinc-900">{user.name}</h1>
+                <span className="text-xs text-zinc-400">
                   @{user.username}
                 </span>
               </div>
 
               {user.bio && (
-                <p className="mt-1 text-xs text-zinc-300 leading-relaxed max-w-lg">
+                <p className="mt-1 text-xs text-zinc-600 leading-relaxed max-w-lg">
                   {user.bio}
                 </p>
               )}
 
               {/* Meta pills: City, College, Github */}
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-zinc-400">
+              <div className="mt-2.5 flex flex-wrap items-center gap-2.5 text-xs text-zinc-500">
                 {user.city && (
                   <span className="inline-flex items-center gap-1">
-                    <MapPin size={12} className="text-zinc-500" />
+                    <MapPin size={11} className="text-zinc-400" />
                     <span>{user.city}</span>
                   </span>
                 )}
                 {user.college && (
                   <span className="inline-flex items-center gap-1">
-                    <GraduationCap size={12} className="text-zinc-500" />
+                    <GraduationCap size={12} className="text-zinc-400" />
                     <span>{user.college}</span>
                   </span>
                 )}
@@ -245,11 +244,11 @@ export default function ProfilePage({
                     href={user.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-zinc-300 hover:text-white transition-colors"
+                    className="inline-flex items-center gap-1 text-zinc-700 hover:text-zinc-900 transition-colors"
                   >
-                    <GithubIcon size={12} />
+                    <GithubIcon size={11} />
                     <span>GitHub</span>
-                    <ExternalLink size={10} className="text-zinc-500" />
+                    <ExternalLink size={9} className="text-zinc-400" />
                   </a>
                 )}
               </div>
@@ -261,29 +260,29 @@ export default function ProfilePage({
             {user.isSelf ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:border-zinc-700 transition-colors"
+                className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors"
               >
-                <Edit3 size={13} />
+                <Edit3 size={12} />
                 <span>Edit Profile</span>
               </button>
             ) : session?.user ? (
               <button
                 onClick={handleToggleFollow}
                 disabled={followLoading}
-                className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold border transition-colors ${
+                className={`inline-flex items-center gap-1 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                   user.isFollowing
-                    ? "border-zinc-800 bg-zinc-900 text-zinc-300 hover:text-zinc-100"
-                    : "border-zinc-700 bg-zinc-100 text-zinc-950 hover:bg-white"
+                    ? "border border-zinc-200 bg-zinc-50 text-zinc-700 hover:text-zinc-900"
+                    : "border border-zinc-300 bg-zinc-900 text-white hover:bg-zinc-800"
                 }`}
               >
                 {user.isFollowing ? (
                   <>
-                    <UserCheck size={13} />
+                    <UserCheck size={12} />
                     <span>Following</span>
                   </>
                 ) : (
                   <>
-                    <UserPlus size={13} />
+                    <UserPlus size={12} />
                     <span>Follow</span>
                   </>
                 )}
@@ -291,9 +290,9 @@ export default function ProfilePage({
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-100 px-3.5 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-white transition-colors"
+                className="inline-flex items-center gap-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 px-3.5 py-1.5 text-xs font-semibold text-white transition-colors"
               >
-                <UserPlus size={13} />
+                <UserPlus size={12} />
                 <span>Follow</span>
               </Link>
             )}
@@ -301,43 +300,43 @@ export default function ProfilePage({
         </div>
 
         {/* Stats bar */}
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 border-t border-zinc-900">
-          <div className="rounded-xl border border-zinc-900 bg-zinc-900/40 p-3">
-            <div className="text-[11px] text-zinc-400 font-mono">Current Streak</div>
-            <div className="mt-1 flex items-center gap-1.5">
-              <Flame size={14} className="text-zinc-200 fill-zinc-200" />
-              <span className="text-base font-bold text-zinc-100 font-mono">
+        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-4 border-t border-zinc-100">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2.5">
+            <div className="text-[10px] text-zinc-400 uppercase font-semibold">Current Streak</div>
+            <div className="mt-0.5 flex items-center gap-1">
+              <Flame size={13} className="text-[#eb5e52] fill-[#eb5e52]" />
+              <span className="text-sm font-bold text-zinc-900 font-mono">
                 {user.currentStreak}
               </span>
-              <span className="text-[11px] text-zinc-400">days</span>
+              <span className="text-[10px] text-zinc-500">days</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-900 bg-zinc-900/40 p-3">
-            <div className="text-[11px] text-zinc-400 font-mono">Longest Streak</div>
-            <div className="mt-1 flex items-center gap-1.5">
-              <span className="text-base font-bold text-zinc-100 font-mono">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2.5">
+            <div className="text-[10px] text-zinc-400 uppercase font-semibold">Longest Streak</div>
+            <div className="mt-0.5 flex items-center gap-1">
+              <span className="text-sm font-bold text-zinc-900 font-mono">
                 {user.longestStreak}
               </span>
-              <span className="text-[11px] text-zinc-400">days</span>
+              <span className="text-[10px] text-zinc-500">days</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-900 bg-zinc-900/40 p-3">
-            <div className="text-[11px] text-zinc-400 font-mono">Total Ships</div>
-            <div className="mt-1 flex items-center gap-1.5">
-              <Layers size={14} className="text-zinc-400" />
-              <span className="text-base font-bold text-zinc-100 font-mono">
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2.5">
+            <div className="text-[10px] text-zinc-400 uppercase font-semibold">Total Ships</div>
+            <div className="mt-0.5 flex items-center gap-1">
+              <Layers size={13} className="text-zinc-500" />
+              <span className="text-sm font-bold text-zinc-900 font-mono">
                 {user.postCount}
               </span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-900 bg-zinc-900/40 p-3">
-            <div className="text-[11px] text-zinc-400 font-mono">Network</div>
-            <div className="mt-1 text-xs text-zinc-300 font-mono">
-              <span className="font-bold text-zinc-100">{user.followerCount}</span> followers ·{" "}
-              <span className="font-bold text-zinc-100">{user.followingCount}</span> following
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2.5">
+            <div className="text-[10px] text-zinc-400 uppercase font-semibold">Network</div>
+            <div className="mt-0.5 text-xs text-zinc-800">
+              <span className="font-bold">{user.followerCount}</span> followers ·{" "}
+              <span className="font-bold">{user.followingCount}</span> following
             </div>
           </div>
         </div>
@@ -345,33 +344,33 @@ export default function ProfilePage({
 
       {/* Edit Profile Modal */}
       {isEditing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-900">
-              <h3 className="text-sm font-semibold text-zinc-100">Edit Profile</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-xl border border-zinc-200 bg-white p-5 shadow-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+              <h3 className="text-sm font-bold text-zinc-900">Edit Profile</h3>
               <button
                 onClick={() => setIsEditing(false)}
-                className="text-zinc-500 hover:text-zinc-300"
+                className="text-zinc-400 hover:text-zinc-700"
               >
-                <X size={16} />
+                <X size={15} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveProfile} className="mt-4 space-y-3">
+            <form onSubmit={handleSaveProfile} className="mt-3.5 space-y-3">
               <div>
-                <label className="text-[11px] font-mono text-zinc-400 block mb-1">
+                <label className="text-xs font-medium text-zinc-700 block mb-1">
                   Name
                 </label>
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100 focus:border-zinc-600 focus:outline-none"
+                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-mono text-zinc-400 block mb-1">
+                <label className="text-xs font-medium text-zinc-700 block mb-1">
                   Bio
                 </label>
                 <textarea
@@ -379,13 +378,13 @@ export default function ProfilePage({
                   onChange={(e) => setEditBio(e.target.value)}
                   rows={2}
                   maxLength={180}
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100 focus:border-zinc-600 focus:outline-none resize-none"
+                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none resize-none"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-[11px] font-mono text-zinc-400 block mb-1">
+                  <label className="text-xs font-medium text-zinc-700 block mb-1">
                     City
                   </label>
                   <input
@@ -393,12 +392,12 @@ export default function ProfilePage({
                     value={editCity}
                     onChange={(e) => setEditCity(e.target.value)}
                     placeholder="e.g. Pune"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100 focus:border-zinc-600 focus:outline-none"
+                    className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-mono text-zinc-400 block mb-1">
+                  <label className="text-xs font-medium text-zinc-700 block mb-1">
                     College / Org
                   </label>
                   <input
@@ -406,13 +405,13 @@ export default function ProfilePage({
                     value={editCollege}
                     onChange={(e) => setEditCollege(e.target.value)}
                     placeholder="e.g. COEP"
-                    className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100 focus:border-zinc-600 focus:outline-none"
+                    className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[11px] font-mono text-zinc-400 block mb-1">
+                <label className="text-xs font-medium text-zinc-700 block mb-1">
                   GitHub Profile URL
                 </label>
                 <input
@@ -420,22 +419,22 @@ export default function ProfilePage({
                   value={editGithub}
                   onChange={(e) => setEditGithub(e.target.value)}
                   placeholder="https://github.com/..."
-                  className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-zinc-100 focus:border-zinc-600 focus:outline-none font-mono"
+                  className="w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 focus:border-zinc-400 focus:bg-white focus:outline-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-900">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-100">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200"
+                  className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingProfile}
-                  className="inline-flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-white disabled:opacity-50"
+                  className="inline-flex items-center gap-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 px-3.5 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
                 >
                   <Check size={12} />
                   <span>{savingProfile ? "Saving..." : "Save Changes"}</span>
@@ -448,17 +447,17 @@ export default function ProfilePage({
 
       {/* Shipped History Feed */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between pb-2 border-b border-zinc-900">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+        <div className="flex items-center justify-between pb-2 border-b border-zinc-200">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-600">
             Shipped Posts ({posts.length})
           </h2>
-          <span className="text-[11px] text-zinc-500 font-mono">
+          <span className="text-[11px] text-zinc-400 font-mono">
             Sorted by latest
           </span>
         </div>
 
         {posts.length === 0 ? (
-          <div className="rounded-xl border border-zinc-900 bg-zinc-950/40 p-8 text-center text-xs text-zinc-500">
+          <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center text-xs text-zinc-400">
             No ships recorded yet.
           </div>
         ) : (

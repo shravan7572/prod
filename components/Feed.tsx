@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
-import { Compass, Users, Sparkles, X, RefreshCw, Radio } from "lucide-react";
+import { Compass, Users, X, RefreshCw } from "lucide-react";
 import { ShipCard, ShipPost } from "./ShipCard";
 import { PostForm } from "./PostForm";
 import { PledgeBanner } from "./PledgeBanner";
@@ -15,6 +15,7 @@ export function Feed({ onWsStatusChange }: FeedProps) {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<"discover" | "following">("discover");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   const [posts, setPosts] = useState<ShipPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +36,9 @@ export function Feed({ onWsStatusChange }: FeedProps) {
       if (selectedTag) {
         url.searchParams.set("tag", selectedTag);
       }
+      if (selectedCity && selectedCity !== "All") {
+        url.searchParams.set("city", selectedCity);
+      }
 
       const res = await fetch(url.toString());
       if (res.ok) {
@@ -47,7 +51,7 @@ export function Feed({ onWsStatusChange }: FeedProps) {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [activeTab, selectedTag, session?.user]);
+  }, [activeTab, selectedTag, selectedCity, session?.user]);
 
   useEffect(() => {
     setLoading(true);
@@ -94,7 +98,6 @@ export function Feed({ onWsStatusChange }: FeedProps) {
             if (data.type === "new_post" && data.payload) {
               const newPost = { ...data.payload, isNew: true };
               setPosts((prev) => {
-                // Prevent duplicate
                 if (prev.some((p) => p.id === newPost.id)) return prev;
                 return [newPost, ...prev];
               });
@@ -107,7 +110,6 @@ export function Feed({ onWsStatusChange }: FeedProps) {
         socket.onclose = () => {
           setWsConnected(false);
           onWsStatusChange?.(false);
-          // Try to reconnect in 4 seconds
           reconnectTimer = setTimeout(connect, 4000);
         };
 
@@ -131,7 +133,6 @@ export function Feed({ onWsStatusChange }: FeedProps) {
     };
   }, [activeTab, session?.user?.id, onWsStatusChange]);
 
-  // Handle new post created locally
   function handlePostCreated(newPost: ShipPost) {
     setPosts((prev) => {
       if (prev.some((p) => p.id === newPost.id)) return prev;
@@ -154,69 +155,124 @@ export function Feed({ onWsStatusChange }: FeedProps) {
         onStreakUpdated={fetchFeed}
       />
 
-      {/* Feed Filter Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-        {/* Tabs: Discover vs Following */}
-        <div className="flex items-center rounded-lg border border-zinc-800 bg-zinc-950 p-1 w-fit">
-          <button
-            onClick={() => {
-              setActiveTab("discover");
-            }}
-            className={`flex items-center gap-2 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-              activeTab === "discover"
-                ? "bg-zinc-800 text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            <Compass size={14} />
-            <span>Discover</span>
-          </button>
+      {/* Feed Navigation & Tabs */}
+      <div className="pt-1 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Tabs: Discover vs Following */}
+          <div className="flex items-center rounded-lg border border-zinc-200 bg-white p-1 w-fit shadow-xs">
+            <button
+              onClick={() => setActiveTab("discover")}
+              className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                activeTab === "discover"
+                  ? "bg-zinc-900 text-white"
+                  : "text-zinc-600 hover:text-zinc-900"
+              }`}
+            >
+              <Compass size={13} />
+              <span>Discover</span>
+            </button>
 
-          <button
-            onClick={() => {
-              setActiveTab("following");
-            }}
-            className={`flex items-center gap-2 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-              activeTab === "following"
-                ? "bg-zinc-800 text-zinc-100 shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            <Users size={14} />
-            <span>Following</span>
-          </button>
+            <button
+              onClick={() => setActiveTab("following")}
+              className={`flex items-center gap-1.5 rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                activeTab === "following"
+                  ? "bg-zinc-900 text-white"
+                  : "text-zinc-600 hover:text-zinc-900"
+              }`}
+            >
+              <Users size={13} />
+              <span>Following</span>
+            </button>
+          </div>
+
+          {/* Refresh & Active Filter Badges */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {selectedCity && (
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs text-zinc-700">
+                <span>📍 {selectedCity}</span>
+                <button
+                  onClick={() => setSelectedCity(null)}
+                  className="text-zinc-400 hover:text-zinc-900"
+                  title="Clear city filter"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            )}
+
+            {selectedTag && (
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-2.5 py-1 text-xs text-zinc-700">
+                <span>#{selectedTag}</span>
+                <button
+                  onClick={() => setSelectedTag(null)}
+                  className="text-zinc-400 hover:text-zinc-900"
+                  title="Clear tag filter"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={() => {
+                setRefreshing(true);
+                fetchFeed();
+              }}
+              disabled={refreshing}
+              className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-white hover:bg-zinc-50 px-2.5 py-1.5 text-xs font-medium text-zinc-600 transition-colors shadow-xs"
+              title="Refresh feed"
+            >
+              <RefreshCw
+                size={12}
+                className={refreshing ? "animate-spin text-zinc-900" : ""}
+              />
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
+          </div>
         </div>
 
-        {/* Tag Filter & Refresh */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {selectedTag && (
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-xs text-zinc-200">
-              <span className="font-mono font-medium">#{selectedTag}</span>
+        {/* Discovery Filter Chips: Cities & Stacks */}
+        <div className="rounded-xl border border-zinc-200 bg-white p-3 space-y-2 text-xs shadow-xs">
+          {/* City filters */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-0.5 text-xs">
+            <span className="text-zinc-400 font-medium flex-shrink-0">City:</span>
+            {[
+              { label: "All", value: null },
+              { label: "Pune", value: "Pune" },
+              { label: "Bangalore", value: "Bangalore" },
+              { label: "Mumbai", value: "Mumbai" },
+            ].map((c) => (
               <button
-                onClick={() => setSelectedTag(null)}
-                className="text-zinc-400 hover:text-white"
-                title="Clear filter"
+                key={c.label}
+                onClick={() => setSelectedCity(c.value)}
+                className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors flex-shrink-0 border ${
+                  selectedCity === c.value || (!selectedCity && c.value === null)
+                    ? "border-zinc-900 bg-zinc-900 text-white"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
+                }`}
               >
-                <X size={12} />
+                {c.label}
               </button>
-            </div>
-          )}
+            ))}
+          </div>
 
-          <button
-            onClick={() => {
-              setRefreshing(true);
-              fetchFeed();
-            }}
-            disabled={refreshing}
-            className="inline-flex items-center gap-1 rounded-md border border-zinc-800 bg-zinc-950 px-2.5 py-1 text-xs text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 transition-colors"
-            title="Refresh feed"
-          >
-            <RefreshCw
-              size={12}
-              className={refreshing ? "animate-spin" : ""}
-            />
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
+          {/* Popular Stack Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pt-1.5 border-t border-zinc-100 text-xs">
+            <span className="text-zinc-400 font-medium flex-shrink-0">Stacks:</span>
+            {["nextjs", "react", "prisma", "ai", "websocket", "postgres", "tailwind"].map((t) => (
+              <button
+                key={t}
+                onClick={() => handleTagClick(t)}
+                className={`rounded px-2 py-0.5 text-xs transition-colors flex-shrink-0 border ${
+                  selectedTag === t
+                    ? "border-zinc-900 bg-zinc-900 text-white font-medium"
+                    : "border-zinc-200 bg-zinc-50 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100"
+                }`}
+              >
+                #{t}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -226,43 +282,43 @@ export function Feed({ onWsStatusChange }: FeedProps) {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="rounded-xl border border-zinc-900 bg-zinc-950/60 p-5 space-y-3 animate-pulse"
+              className="rounded-xl border border-zinc-200 bg-white p-5 space-y-3 animate-pulse"
             >
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-zinc-900" />
+                <div className="h-9 w-9 rounded-full bg-zinc-100" />
                 <div className="space-y-1.5 flex-1">
-                  <div className="h-3.5 w-28 bg-zinc-900 rounded" />
-                  <div className="h-2.5 w-40 bg-zinc-900 rounded" />
+                  <div className="h-3.5 w-28 bg-zinc-100 rounded" />
+                  <div className="h-2.5 w-40 bg-zinc-100 rounded" />
                 </div>
               </div>
-              <div className="h-4 w-3/4 bg-zinc-900 rounded" />
-              <div className="h-4 w-1/2 bg-zinc-900 rounded" />
+              <div className="h-3.5 w-3/4 bg-zinc-100 rounded" />
+              <div className="h-3.5 w-1/2 bg-zinc-100 rounded" />
             </div>
           ))}
         </div>
       ) : posts.length === 0 ? (
-        <div className="rounded-xl border border-zinc-900 bg-zinc-950/60 p-10 text-center">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900 text-zinc-400">
+        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center shadow-xs">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-100 text-zinc-500">
             {activeTab === "following" ? <Users size={18} /> : <Compass size={18} />}
           </div>
-          <h3 className="mt-3 text-sm font-semibold text-zinc-200">
+          <h3 className="mt-3 text-sm font-semibold text-zinc-900">
             {activeTab === "following"
               ? "No ships from your network yet"
               : selectedTag
               ? `No ships tagged #${selectedTag}`
               : "No ships recorded yet today"}
           </h3>
-          <p className="mt-1 text-xs text-zinc-400 max-w-sm mx-auto">
+          <p className="mt-1 text-xs text-zinc-500 max-w-sm mx-auto">
             {activeTab === "following"
-              ? "Follow other builders from the Discover feed or the sidebar to see their daily ships here."
-              : "Be the first to ship and set the tone for today!"}
+              ? "Follow other builders from Discover to see their daily ships here."
+              : "Be the first to share what you shipped today."}
           </p>
           {activeTab === "following" && (
             <button
               onClick={() => setActiveTab("discover")}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-1.5 text-xs font-semibold text-zinc-200 hover:border-zinc-700 transition-colors"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 px-4 py-1.5 text-xs font-semibold text-white transition-colors"
             >
-              <Compass size={13} />
+              <Compass size={12} />
               <span>Explore Discover Feed</span>
             </button>
           )}

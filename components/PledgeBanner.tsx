@@ -59,32 +59,32 @@ export function PledgeBanner() {
   if (!session?.user) return null;
 
   return (
-    <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-sm p-4 shadow-sm transition-colors">
+    <div className="rounded-xl border border-zinc-200 bg-white p-3.5 shadow-xs mb-4 minimal-card">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-100 text-zinc-600 flex-shrink-0">
             <Target size={14} />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              <span className="text-xs font-semibold text-zinc-900">
                 {pledge ? "Today's Pledge" : "Tomorrow's Pledge"}
               </span>
               {submitted && (
-                <span className="inline-flex items-center gap-1 text-[10px] text-zinc-300 font-mono">
-                  <Check size={10} /> Saved
+                <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
+                  <Check size={11} /> Saved
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-200 truncate mt-0.5">
-              {pledge ? pledge.content : "Commit in advance. What will you build tomorrow?"}
+            <p className="text-xs text-zinc-500 truncate mt-0.5">
+              {pledge ? pledge.content : "Commit in advance: What will you build tomorrow?"}
             </p>
           </div>
         </div>
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="inline-flex items-center gap-1 rounded-md border border-zinc-800 bg-zinc-900/80 px-2.5 py-1 text-xs font-medium text-zinc-300 hover:border-zinc-700 hover:text-zinc-100 transition-colors flex-shrink-0"
+          className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700 transition-colors flex-shrink-0"
         >
           {isAdding ? (
             <>
@@ -101,7 +101,7 @@ export function PledgeBanner() {
       </div>
 
       {isAdding && (
-        <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-zinc-900">
+        <form onSubmit={handleSubmit} className="mt-3 pt-3 border-t border-zinc-100">
           <div className="flex gap-2">
             <input
               type="text"
@@ -110,12 +110,12 @@ export function PledgeBanner() {
               placeholder="Tomorrow I will ship..."
               maxLength={280}
               required
-              className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none transition-colors"
+              className="flex-1 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs text-zinc-900 placeholder-zinc-400 focus:border-zinc-400 focus:bg-white focus:outline-none transition-colors"
             />
             <button
               type="submit"
               disabled={loading || !content.trim()}
-              className="rounded-lg border border-zinc-700 bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-950 hover:bg-white disabled:opacity-40 transition-colors flex-shrink-0"
+              className="rounded-lg bg-[#eb5e52] hover:bg-[#de5044] px-3.5 py-1.5 text-xs font-semibold text-white disabled:opacity-40 transition-colors flex-shrink-0 shadow-xs"
             >
               {loading ? "Saving..." : "Commit"}
             </button>

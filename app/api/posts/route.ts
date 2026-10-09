@@ -36,11 +36,20 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const limit = Math.min(parseInt(searchParams.get("limit") || "30", 10), 100);
     const tag = searchParams.get("tag");
+    const city = searchParams.get("city");
 
     const whereClause: Record<string, unknown> = {};
     if (tag) {
       whereClause.tags = {
         has: tag.replace(/^#/, "").toLowerCase(),
+      };
+    }
+    if (city && city !== "All") {
+      whereClause.user = {
+        city: {
+          equals: city,
+          mode: "insensitive",
+        },
       };
     }
 
