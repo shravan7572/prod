@@ -22,7 +22,7 @@ export default function FeedPage() {
         <SuggestFollows />
 
         {/* Community Info Card */}
-        <div className="rounded-xl border border-zinc-900 bg-zinc-950/60 p-4">
+        <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-sm shadow-sm p-4">
           <div className="flex items-center gap-2 pb-2.5 border-b border-zinc-900">
             <Zap size={14} className="text-zinc-400" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">

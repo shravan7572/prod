@@ -1,9 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
-import { CheckCircle2, Flame, Sparkles, Send, Clock, Link2, Hash } from "lucide-react";
+import {
+  CheckCircle2,
+  Flame,
+  Send,
+  Clock,
+  Link2,
+  Hash,
+  Plus,
+  User,
+  Users,
+} from "lucide-react";
 import { ShipPost } from "./ShipCard";
 
 interface PostFormProps {
@@ -28,6 +38,14 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
 
   const [streakStatus, setStreakStatus] = useState<StreakStatus | null>(null);
   const [timeUntilReset, setTimeUntilReset] = useState<string>("");
+  const [forceShowForm, setForceShowForm] = useState(false);
+
+  // Quick account selection for guests
+  const [selectedQuickDev, setSelectedQuickDev] = useState({
+    name: "Shravan Choudhary",
+    username: "shravan",
+    email: "shravan@shipit.dev",
+  });
 
   // Fetch today's shipping status
   useEffect(() => {
@@ -51,9 +69,7 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
   // Calculate countdown to midnight IST
   useEffect(() => {
     function updateCountdown() {
-      // Midnight IST is 18:30 UTC
       const now = new Date();
-      // IST offset is 5.5 hours
       const istNow = new Date(now.getTime() + 5.5 * 3600 * 1000);
       const nextMidnightIST = new Date(
         Date.UTC(
@@ -98,6 +114,22 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
     setError(null);
 
     try {
+      // If user is not logged in, log in automatically with selected dev profile first
+      if (!session?.user) {
+        const loginRes = await signIn("credentials", {
+          redirect: false,
+          email: selectedQuickDev.email,
+          name: selectedQuickDev.name,
+          username: selectedQuickDev.username,
+        });
+
+        if (loginRes?.error) {
+          setError("Quick login failed. Please sign in via /login.");
+          setLoading(false);
+          return;
+        }
+      }
+
       const res = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -105,13 +137,14 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
           content,
           tags,
           link,
+          allowAnotherToday: forceShowForm, // allows test posting when user deliberately clicked 'Ship Another'
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Failed to post ship.");
-        if (data.error?.toLowerCase().includes("already shipped")) {
+        if (data.alreadyShipped) {
           setStreakStatus((prev) =>
             prev ? { ...prev, hasShippedToday: true } : null
           );
@@ -120,6 +153,7 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
         setContent("");
         setTags("");
         setLink("");
+        setForceShowForm(false);
         onPostCreated?.(data.post);
         onStreakUpdated?.();
         fetchStreak();
@@ -131,37 +165,13 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
     }
   }
 
-  if (status === "unauthenticated") {
-    return (
-      <div className="rounded-xl border border-zinc-800 bg-zinc-950/90 p-5 text-center">
-        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-zinc-300">
-          <Flame size={18} />
-        </div>
-        <h3 className="mt-3 text-base font-semibold text-zinc-100">
-          What did you ship today?
-        </h3>
-        <p className="mt-1 text-xs text-zinc-400 max-w-md mx-auto">
-          One ship per day. Daily accountability for developers who build. Sign in to
-          keep your streak alive.
-        </p>
-        <div className="mt-4">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-100 px-4 py-2 text-xs font-semibold text-zinc-950 hover:bg-white transition-colors"
-          >
-            <span>Sign In to Ship</span>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (streakStatus?.hasShippedToday) {
+  // If user already shipped today and hasn't clicked "Ship Another"
+  if (session?.user && streakStatus?.hasShippedToday && !forceShowForm) {
     return (
       <div className="rounded-xl border border-zinc-800 bg-zinc-950/90 p-5">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-zinc-100">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-zinc-100 flex-shrink-0">
               <CheckCircle2 size={20} className="text-zinc-100" />
             </div>
             <div>
@@ -180,14 +190,25 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
             </div>
           </div>
 
-          <div className="text-right flex-shrink-0">
-            <div className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400">
-              <Clock size={12} />
-              <span>Unlocks in:</span>
+          <div className="flex items-center gap-3 self-end sm:self-center">
+            <div className="text-right">
+              <div className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400">
+                <Clock size={11} />
+                <span>Next ship:</span>
+              </div>
+              <div className="font-mono text-xs font-semibold text-zinc-200">
+                {timeUntilReset || "Midnight IST"}
+              </div>
             </div>
-            <div className="font-mono text-xs font-semibold text-zinc-200">
-              {timeUntilReset || "Midnight IST"}
-            </div>
+
+            <button
+              onClick={() => setForceShowForm(true)}
+              className="inline-flex items-center gap-1 rounded-lg border border-zinc-800 bg-zinc-900 px-2.5 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-700 hover:text-white transition-colors"
+              title="Post another ship in test mode"
+            >
+              <Plus size={13} />
+              <span>Ship Another</span>
+            </button>
           </div>
         </div>
       </div>
@@ -199,7 +220,7 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-xl border border-zinc-800 bg-zinc-950/90 p-5"
+      className="rounded-xl border border-zinc-800 bg-zinc-950/90 p-5 shadow-sm"
     >
       <div className="flex items-center justify-between pb-3 border-b border-zinc-900">
         <div className="flex items-center gap-2">
@@ -208,9 +229,20 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
             What did you ship today?
           </h3>
         </div>
-        <span className="text-[11px] font-mono text-zinc-400">
-          Resets at midnight IST
-        </span>
+        <div className="flex items-center gap-3">
+          {forceShowForm && (
+            <button
+              type="button"
+              onClick={() => setForceShowForm(false)}
+              className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200"
+            >
+              Cancel
+            </button>
+          )}
+          <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline">
+            Resets at midnight IST
+          </span>
+        </div>
       </div>
 
       {error && (
@@ -233,7 +265,7 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
       </div>
 
       {/* Tags and Link inputs */}
-      <div className="mt-2.5 grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div className="mt-2.5 grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div className="relative">
           <Hash
             size={13}
@@ -263,8 +295,43 @@ export function PostForm({ onPostCreated, onStreakUpdated }: PostFormProps) {
         </div>
       </div>
 
+      {/* If guest: quick identity switcher so they can post instantly */}
+      {!session?.user && (
+        <div className="mt-3 pt-2.5 border-t border-zinc-900 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-zinc-500 font-mono text-[11px]">Post as:</span>
+            {[
+              { name: "Shravan Choudhary", username: "shravan", email: "shravan@shipit.dev" },
+              { name: "Aarav Sharma", username: "aarav_builds", email: "aarav@shipit.dev" },
+              { name: "Priya Patel", username: "priyacodes", email: "priya@shipit.dev" },
+              { name: "Fresh Builder", username: "fresh_dev", email: "fresh@shipit.dev" },
+            ].map((dev) => (
+              <button
+                key={dev.username}
+                type="button"
+                onClick={() => setSelectedQuickDev(dev)}
+                className={`rounded px-2 py-0.5 text-[11px] font-mono border transition-colors ${
+                  selectedQuickDev.username === dev.username
+                    ? "border-zinc-600 bg-zinc-800 text-zinc-100"
+                    : "border-zinc-800/80 bg-zinc-900/40 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                @{dev.username}
+              </button>
+            ))}
+          </div>
+
+          <Link
+            href="/login"
+            className="text-[11px] text-zinc-400 hover:text-zinc-200 font-mono underline"
+          >
+            Or Google Sign In
+          </Link>
+        </div>
+      )}
+
       {/* Footer / Submit */}
-      <div className="mt-3.5 flex items-center justify-between pt-2">
+      <div className="mt-3.5 flex items-center justify-between pt-2 border-t border-zinc-900">
         <div className="flex items-center gap-2">
           <span
             className={`font-mono text-xs ${

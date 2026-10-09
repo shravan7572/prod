@@ -99,14 +99,14 @@ export function ShipCard({
 
   return (
     <article
-      className={`relative rounded-xl border p-5 transition-all duration-300 ${
+      className={`relative rounded-xl border p-5 card-hover backdrop-blur-sm ${
         post.isNew
-          ? "border-zinc-500 bg-zinc-900/90 shadow-lg shadow-zinc-900/50"
-          : "border-zinc-800/80 bg-zinc-950/80 hover:border-zinc-700 hover:bg-zinc-900/30"
+          ? "border-zinc-500 bg-zinc-900/90 shadow-md shadow-zinc-900"
+          : "border-zinc-800/80 bg-zinc-950/70 shadow-sm"
       }`}
     >
       {post.isNew && (
-        <div className="absolute -top-2.5 right-4 rounded-full border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-zinc-300">
+        <div className="absolute -top-2.5 right-4 rounded-full border border-zinc-600 bg-zinc-900 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-zinc-200 shadow-sm">
           Just Shipped
         </div>
       )}

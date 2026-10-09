@@ -59,7 +59,7 @@ export function PledgeBanner() {
   if (!session?.user) return null;
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4 transition-colors">
+    <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-sm p-4 shadow-sm transition-colors">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-300">

@@ -80,7 +80,7 @@ export function SuggestFollows() {
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-zinc-900 bg-zinc-950/60 p-4">
+    <div className="rounded-xl border border-zinc-800/80 bg-zinc-950/70 backdrop-blur-sm p-4 shadow-sm">
       <div className="flex items-center gap-2 pb-3 border-b border-zinc-900">
         <Users size={14} className="text-zinc-400" />
         <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-300">

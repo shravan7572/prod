@@ -50,9 +50,12 @@ export const authOptions: NextAuthOptions = {
               name,
               username: finalUsername,
               image: `https://api.dicebear.com/7.x/identicon/svg?seed=${finalUsername}`,
-              bio: "Building cool stuff daily with Next.js & PostgreSQL",
-              city: "Pune",
-              college: "COEP",
+              bio: "Developer shipping daily.",
+              city: null,
+              college: null,
+              currentStreak: 0,
+              longestStreak: 0,
+              lastShippedAt: null,
             },
           });
         }

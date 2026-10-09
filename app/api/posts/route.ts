@@ -95,9 +95,14 @@ export async function POST(req: NextRequest) {
 
     // 1 Post per day check (resets at midnight IST)
     const alreadyShipped = await hasShippedToday(userId);
-    if (alreadyShipped) {
+    const allowOverride = body.allowAnotherToday === true;
+
+    if (alreadyShipped && !allowOverride) {
       return NextResponse.json(
-        { error: "Already shipped today! Only 1 ship per day is allowed. Next ship unlocks at midnight IST." },
+        {
+          error: "Already shipped today! Only 1 ship per day is allowed. Next ship unlocks at midnight IST.",
+          alreadyShipped: true,
+        },
         { status: 400 }
       );
     }

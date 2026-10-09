@@ -38,7 +38,7 @@ export function Navbar({ wsConnected = false }: NavbarProps) {
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
         {/* Brand */}
         <div className="flex items-center gap-4">
-          <Link href="/feed" className="flex items-center gap-2.5 group">
+          <Link href="/" className="flex items-center gap-2.5 group">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-100 group-hover:border-zinc-500 transition-colors">
               <Terminal size={16} />
             </div>

@@ -1,5 +1,10 @@
-import { redirect } from "next/navigation";
+import FeedPage from "./(main)/feed/page";
+import MainLayout from "./(main)/layout";
 
 export default function Home() {
-  redirect("/feed");
+  return (
+    <MainLayout>
+      <FeedPage />
+    </MainLayout>
+  );
 }

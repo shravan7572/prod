@@ -1,7 +1,7 @@
 import http from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
 
-const PORT = parseInt(process.env.WS_PORT || "8080", 10);
+const PORT = parseInt(process.env.PORT || process.env.WS_PORT || "8080", 10);
 const rooms = new Map<string, Set<WebSocket>>();
 
 const server = http.createServer((req, res) => {
